@@ -1,0 +1,20 @@
+<jnlp spec="1.0+" codebase="http://sockettest.sourceforge.net/wstart" href="http://sockettest.sourceforge.net/wstart/SocketTest.jnlp">
+  <information>
+    <title>SocketTest</title>
+    <vendor>Akshathkumar Shetty</vendor>
+    <homepage href="http://sockettest.sourceforge.net/"/>
+    <description>SocketTest</description>
+    <description kind="short">Socket Test app.</description>
+    <icon href="logo.gif" kind="default"/>
+    <!--
+    <icon href="some.gif" kind="splash"/>
+    -->
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.3+"/>
+    <jar href="SocketTest.jar" download="eager" main="false"/>
+    <jar href="metouia.jar" download="eager" main="false"/>
+  </resources>
+  <application-desc main-class="net.sf.sockettest.SocketTest" />
+</jnlp>
