@@ -1,0 +1,11 @@
+53	dns-lookup
+63	whois++
+70	gopher
+135	ntrpc/dce
+137	netbios-ns
+138	netbios-dgn
+161	snmp
+515	printer
+1024-1030	w2k rpc services
+31337	backorifice
+54321	bo2k

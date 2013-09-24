@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: net.sf.sockettest.SocketTest
+Class-Path: metouia.jar
+X-Author: Akshathkumar Shetty
+X-URL: http://sockettest.sourceforge.net/

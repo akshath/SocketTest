@@ -1,0 +1,8 @@
+# Set default behaviour, in case users don't have core.autocrlf set.
+text eol=lf
+
+*.bat text eol=crlf
+
+# Explicitly declare text files we want to always be normalized and converted to native line endings on checkout.
+*.txt text
+*.java text

@@ -1,0 +1,35 @@
+21	ftp
+22	ssh
+23	telnet
+25	smtp	Send mails
+42	nameserver
+43	whois
+53	dns-zone
+63	whois++
+70	gopher
+79	finger
+80	http	Web Server
+109	pop2
+110	pop3
+135	ntrpc/dce
+137	netbios-ns
+138	netbios-dgn
+139	netbios
+143	imap
+389	ldap
+386	netware-ip
+443	https/ssl
+515	printer
+1024-1030	w2k rpc services
+1080	socks
+1745	winsock-proxy
+5631	pcanywhere	RAT s/w
+5800	vnc	RAT s/w
+5900	vnc-java
+8000	web
+8001	web
+8002	web
+8080	web	Web server like tomcat
+12345	netbus	trojan
+54320	bo2k
+65301	pcanywhere-def
