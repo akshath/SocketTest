@@ -13,17 +13,17 @@ public class SocketClient extends Thread {
     private Socket socket=null;
     private SocketTestClient parent;
     private BufferedInputStream in;
-    private boolean desonnected=false;
+    private boolean disconnected =false;
     
-    public synchronized void setDesonnected(boolean cr) {
-        desonnected=cr;
+    public synchronized void setDisconnected(boolean cr) {
+        disconnected =cr;
     }
     
     private SocketClient(SocketTestClient parent, Socket s) {
         super("SocketClient");
         this.parent = parent;
         socket=s;
-        setDesonnected(false);
+        setDisconnected(false);
         start();
     }
     
@@ -60,20 +60,16 @@ public class SocketClient extends Thread {
             return;
         }
         
-        while(!desonnected) {
+        while(!disconnected) {
             try {
-                String got = readInputStream(in); //in.readLine();
+                String got = readInputStream(in);
                 if(got==null) {
-                    //parent.error("Connection closed by client");
                     parent.disconnect();
                     break;
                 }
-                //got = got.replaceAll("\n","<LF>");
-                //got = got.replaceAll("\r","<CR>");
-                //parent.append("R: "+got);
                 parent.appendnoNewLine(got);
             } catch(IOException e) {
-                if(!desonnected) {
+                if(!disconnected) {
                     parent.error(e.getMessage(),"Connection lost");
                     parent.disconnect();
                 }

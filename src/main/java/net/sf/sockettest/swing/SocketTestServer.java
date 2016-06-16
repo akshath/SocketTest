@@ -176,7 +176,7 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
         sendButton.setToolTipText("Send text to client");
         ActionListener sendListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String msg = sendField.getText();
+                String msg = StringEscapeUtils.unescapeJava(sendField.getText());
                 if(!msg.equals(""))
                     sendMessage(msg);
                 else {

@@ -47,7 +47,6 @@ public class SocketTest extends JFrame {
         try {
             UIManager.setLookAndFeel("net.sourceforge.mlf.metouia.MetouiaLookAndFeel");
         } catch(Exception e) {
-            //e.printStackTrace();
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch(Exception ee) {

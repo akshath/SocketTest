@@ -13,6 +13,8 @@ import java.io.*;
 import javax.net.ssl.*;
 
 import net.sf.sockettest.*;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 /**
  *
  * @author Akshathkumar Shetty
@@ -194,7 +196,7 @@ public class SocketTestClient extends JPanel {
         sendButton.setToolTipText("Send text to host");
         ActionListener sendListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String msg = sendField.getText();
+                    String msg = StringEscapeUtils.unescapeJava(sendField.getText());
                 if(!msg.equals(""))
                     sendMessage(msg);
                 else {
@@ -387,7 +389,7 @@ public class SocketTestClient extends JPanel {
     
     public synchronized void disconnect() {
         try {
-            socketClient.setDesonnected(true);
+            socketClient.setDisconnected(true);
             socket.close();
         } catch (Exception e) {
             System.err.println("Error closing client : "+e);
