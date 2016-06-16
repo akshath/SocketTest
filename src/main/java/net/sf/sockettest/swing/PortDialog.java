@@ -1,9 +1,8 @@
 package net.sf.sockettest.swing;
 
 import javax.swing.*;
-import javax.swing.table.*;
 import java.awt.*;
-import java.io.IOException;
+
 import net.sf.sockettest.PortModel;
 import net.sf.sockettest.*;
 

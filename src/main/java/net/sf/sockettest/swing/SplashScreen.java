@@ -2,8 +2,7 @@ package net.sf.sockettest.swing;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.event.*;
+
 import net.sf.sockettest.*;
 
 /**

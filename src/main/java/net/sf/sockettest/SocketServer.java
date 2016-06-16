@@ -19,12 +19,12 @@ public class SocketServer extends Thread {
     private boolean stop = false;
     
     //disconnect client
-    public synchronized void setDesonnected(boolean cr) {
-        if(socket!=null && cr==true) {
+    public synchronized void setDesconnected(boolean cr) {
+        if(socket!=null && cr) {
             try	{
                 socket.close();
             } catch (Exception e) {
-                System.err.println("Error closing clinet : setDesonnected : "+e);
+                System.err.println("Error closing clinet : setDesconnected : "+e);
             }
         }
         desonnected=cr;
@@ -33,7 +33,7 @@ public class SocketServer extends Thread {
     //stop server
     public synchronized void setStop(boolean cr) {
         stop=cr;
-        if(server!=null && cr==true) {
+        if(server!=null && cr) {
             try	{
                 server.close();
             } catch (Exception e) {
@@ -47,7 +47,7 @@ public class SocketServer extends Thread {
         this.parent = parent;
         server=s;
         setStop(false);
-        setDesonnected(false);
+        setDesconnected(false);
         start();
     }
     
@@ -60,7 +60,7 @@ public class SocketServer extends Thread {
         else {
             if(socketServer.server!=null) {
                 try	{
-                    socketServer.setDesonnected(true);
+                    socketServer.setDesconnected(true);
                     socketServer.setStop(true);
                     if(socketServer.socket!=null)
                         socketServer.socket.close();
@@ -110,7 +110,7 @@ public class SocketServer extends Thread {
             in = new BufferedInputStream(is);
         } catch(IOException e) {
             parent.append("> Cound't open input stream on Clinet "+e.getMessage());
-            setDesonnected(true);
+            setDesconnected(true);
             return;
         }
         
@@ -120,7 +120,7 @@ public class SocketServer extends Thread {
             try	{
                 rec = readInputStream(in);//in.readLine();
             } catch (Exception e) {
-                setDesonnected(true);
+                setDesconnected(true);
                 if(!desonnected) {
                     parent.error(e.getMessage(),"Lost Client conection");
                     parent.append("> Server lost Client conection.");
@@ -135,7 +135,7 @@ public class SocketServer extends Thread {
                 //parent.append("R: "+rec);
                 parent.appendnoNewLine(rec);
             } else {
-                setDesonnected(true);
+                setDesconnected(true);
                 parent.append("> Client closed conection.");
                 break;
             }

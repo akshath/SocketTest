@@ -1,10 +1,7 @@
 package net.sf.sockettest.swing;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
 import java.io.IOException;
 import net.sf.sockettest.*;
 
@@ -139,7 +136,7 @@ public class About extends JPanel /*JFrame*/ {
         centerPanel = new JPanel();
         readme.setText("Loading... readme");
         try {
-            String cont = Util.readFile("readme.txt",(Object)About.this);
+            String cont = Util.readFile("readme.txt", About.this);
             readme.setText(cont);
         } catch (IOException e){
             System.err.println("Error reading readme.txt "+e);

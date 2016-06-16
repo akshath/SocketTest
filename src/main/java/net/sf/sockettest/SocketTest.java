@@ -1,11 +1,8 @@
 package net.sf.sockettest;
 
 import java.awt.*;
-import java.applet.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
+
 import net.sf.sockettest.swing.About;
 import net.sf.sockettest.swing.SocketTestClient;
 import net.sf.sockettest.swing.SocketTestServer;

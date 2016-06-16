@@ -1,7 +1,7 @@
 package net.sf.sockettest;
 
 import java.net.*;
-import java.io.*;
+
 import net.sf.sockettest.swing.SocketTestUdp;
 /**
  *
