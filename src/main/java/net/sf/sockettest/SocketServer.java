@@ -3,6 +3,9 @@ package net.sf.sockettest;
 import java.net.*;
 import java.io.*;
 import net.sf.sockettest.swing.SocketTestServer;
+import org.apache.commons.lang3.StringEscapeUtils;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  *
@@ -130,9 +133,9 @@ public class SocketServer extends Thread {
             }
             
             if (rec != null) {
-                //rec = rec.replaceAll("\n","<LF>");
-                //rec = rec.replaceAll("\r","<CR>");
-                //parent.append("R: "+rec);
+                if(parent.isHexOutput()) {
+                    rec = DatatypeConverter.printHexBinary(rec.getBytes());
+                }
                 parent.appendnoNewLine(rec);
             } else {
                 setDesconnected(true);
@@ -156,6 +159,6 @@ public class SocketServer extends Thread {
             _in.read(byteData);
             data += new String(byteData);
         }
-        return data;
+        return StringEscapeUtils.unescapeJava(data);
     }
 }

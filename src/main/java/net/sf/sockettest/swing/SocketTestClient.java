@@ -11,6 +11,7 @@ import java.net.*;
 import java.io.*;
 
 import javax.net.ssl.*;
+import javax.xml.bind.DatatypeConverter;
 
 import net.sf.sockettest.*;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -62,6 +63,8 @@ public class SocketTestClient extends JPanel {
     private PrintWriter out;
     private SocketClient socketClient;
     protected final JFrame parent;
+    private JCheckBox hexInputCheckBox = new JCheckBox("Hex Input");
+    private JCheckBox hexOutputCheckBox = new JCheckBox("Hex Output");
     
     public SocketTestClient(final JFrame parent) {
         //Container cp = getContentPane();
@@ -172,6 +175,7 @@ public class SocketTestClient extends JPanel {
         JScrollPane jsp = new JScrollPane(messagesField);
         textPanel.add(jsp);
         textPanel.setBorder(BorderFactory.createEmptyBorder(3,3,0,3));
+        textPanel.add(hexOutputCheckBox, BorderLayout.SOUTH);
         
         sendPanel = new JPanel();
         sendPanel.setLayout(new GridBagLayout());
@@ -196,7 +200,18 @@ public class SocketTestClient extends JPanel {
         sendButton.setToolTipText("Send text to host");
         ActionListener sendListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    String msg = StringEscapeUtils.unescapeJava(sendField.getText());
+                String msg;
+                String text = sendField.getText();
+                if (hexInputCheckBox.isSelected()) {
+                    try {
+                        msg = new String(DatatypeConverter.parseHexBinary(text));
+                    } catch (Exception ex) {
+                        error(ex.getMessage());
+                        return;
+                    }
+                } else {
+                    msg = StringEscapeUtils.unescapeJava(text);
+                }
                 if(!msg.equals(""))
                     sendMessage(msg);
                 else {
@@ -217,6 +232,9 @@ public class SocketTestClient extends JPanel {
                 BorderFactory.createEmptyBorder(0,0,0,3),
                 BorderFactory.createTitledBorder("Send")));
         
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        sendPanel.add(hexInputCheckBox, gbc);
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridBagLayout());
         gbc.weighty = 0.0;
@@ -436,8 +454,12 @@ public class SocketTestClient extends JPanel {
                 out = new PrintWriter(new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream())), true);
             }
-            append("S: "+s);
-            out.print(s+NEW_LINE);
+            if (hexOutputCheckBox.isSelected()) {
+                append("S: " + DatatypeConverter.printHexBinary(s.getBytes()));
+            } else {
+                append("S: "+s);
+            }
+            out.print(StringEscapeUtils.escapeJava(s)+NEW_LINE);
             out.flush();
             sendField.setText("");
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -465,4 +487,7 @@ public class SocketTestClient extends JPanel {
         repaint();
     }
     
+    public boolean isHexOutput() {
+        return hexOutputCheckBox.isSelected();
+    }
 }

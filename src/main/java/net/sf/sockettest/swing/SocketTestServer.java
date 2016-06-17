@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.xml.bind.DatatypeConverter;
 
 import java.net.*;
 import java.io.*;
@@ -49,16 +50,18 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
     private JButton disconnectButton = new JButton("Disconnect");
     private JButton saveButton = new JButton("Save");
     private JButton clearButton = new JButton("Clear");
-    
+
+    private JCheckBox hexInputCheckBox = new JCheckBox("Hex Input");
+    private JCheckBox hexOutputCheckBox = new JCheckBox("Hex Output");
+
     private GridBagConstraints gbc = new GridBagConstraints();
-    
     private Socket socket;
     private ServerSocket server;
     private SocketServer socketServer;
+
     private PrintWriter out;
-    
     protected final JFrame parent;
-    
+
     public SocketTestServer(final JFrame parent) {
         //Container cp = getContentPane();
         this.parent = parent;
@@ -136,23 +139,24 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
         connectButton.addActionListener(connectListener);
         toPanel.add(connectButton, gbc);
         
-        toPanel.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(),"Listen On"));
-        topPanel.setLayout(new BorderLayout(10,0));
+        toPanel.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(), "Listen On"));
+        topPanel.setLayout(new BorderLayout(10, 0));
         topPanel.add(toPanel);
         logoLabel.setVerticalTextPosition(JLabel.BOTTOM);
         logoLabel.setHorizontalTextPosition(JLabel.CENTER);
-        topPanel.add(logoLabel,BorderLayout.EAST);
+        topPanel.add(logoLabel, BorderLayout.EAST);
         topPanel.setBorder(BorderFactory.createEmptyBorder(10,10,5,10));
         
         
         textPanel = new JPanel();
-        textPanel.setLayout(new BorderLayout(0,5));
-        textPanel.add(convLabel,BorderLayout.NORTH);
+        textPanel.setLayout(new BorderLayout(0, 5));
+        textPanel.add(convLabel, BorderLayout.NORTH);
         messagesField.setEditable(false);
         JScrollPane jsp = new JScrollPane(messagesField);
         textPanel.add(jsp);
-        textPanel.setBorder(BorderFactory.createEmptyBorder(3,3,0,3));
-        
+        textPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 0, 3));
+        textPanel.add(hexOutputCheckBox, BorderLayout.SOUTH);
+
         sendPanel = new JPanel();
         sendPanel.setLayout(new GridBagLayout());
         gbc.weighty = 0.0;
@@ -176,7 +180,19 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
         sendButton.setToolTipText("Send text to client");
         ActionListener sendListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String msg = StringEscapeUtils.unescapeJava(sendField.getText());
+                String msg;
+                String text = sendField.getText();
+                if (hexInputCheckBox.isSelected()) {
+                    try {
+                        msg = new String(DatatypeConverter.parseHexBinary(text));
+                    } catch (Exception ex) {
+                        error(ex.getMessage());
+                        return;
+                    }
+                } else {
+                    msg = StringEscapeUtils.unescapeJava(text);
+                }
+
                 if(!msg.equals(""))
                     sendMessage(msg);
                 else {
@@ -201,7 +217,10 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
         disconnectButton.addActionListener(disconnectListener);
         disconnectButton.setEnabled(false);
         sendPanel.add(disconnectButton, gbc);
-        
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        sendPanel.add(hexInputCheckBox, gbc);
+
         sendPanel.setBorder(
                 new CompoundBorder(
                 BorderFactory.createEmptyBorder(0,0,0,3),
@@ -439,8 +458,12 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
                 out = new PrintWriter(new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream())), true);
             }
-            append("S: "+s);
-            out.print(s+NEW_LINE);
+            if (hexOutputCheckBox.isSelected()) {
+                append("S: " + DatatypeConverter.printHexBinary(s.getBytes()));
+            } else {
+                append("S: " + s);
+            }
+            out.print(StringEscapeUtils.escapeJava(s)+NEW_LINE);
             out.flush();
             sendField.setText("");
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -466,5 +489,9 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
         centerPanel.setBorder(cb);
         invalidate();
         repaint();
-    }    
+    }
+
+    public boolean isHexOutput() {
+        return hexOutputCheckBox.isSelected();
+    }
 }

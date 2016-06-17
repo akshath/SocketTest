@@ -3,6 +3,10 @@ package net.sf.sockettest;
 import java.net.*;
 import java.io.*;
 import net.sf.sockettest.swing.SocketTestClient;
+import org.apache.commons.lang3.StringEscapeUtils;
+
+import javax.xml.bind.DatatypeConverter;
+
 /**
  *
  * @author Akshathkumar Shetty
@@ -67,6 +71,9 @@ public class SocketClient extends Thread {
                     parent.disconnect();
                     break;
                 }
+                if(parent.isHexOutput()) {
+                    got = DatatypeConverter.printHexBinary(got.getBytes());
+                }
                 parent.appendnoNewLine(got);
             } catch(IOException e) {
                 if(!disconnected) {
@@ -97,7 +104,7 @@ public class SocketClient extends Thread {
             _in.read(byteData);
             data += new String(byteData);
         }
-        return data;
+        return StringEscapeUtils.unescapeJava(data);
     }
     
 }
