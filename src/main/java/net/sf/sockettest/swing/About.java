@@ -9,7 +9,7 @@ import net.sf.sockettest.*;
  * About Tab
  * @author Akshathkumar Shetty
  */
-public class About extends JPanel /*JFrame*/ {
+public class About extends JPanel {
     private ClassLoader cl = getClass().getClassLoader();
     public ImageIcon logo = new ImageIcon(
             cl.getResource("icons/logo.gif"));

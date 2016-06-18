@@ -1,8 +1,9 @@
 package net.sf.sockettest;
 
+import net.sf.sockettest.swing.AskView;
+
 import javax.net.ssl.*;
 import java.security.cert.*;
-import java.awt.*;
 import javax.swing.*;
 import java.security.*;
 
@@ -13,13 +14,13 @@ import java.security.*;
  */
 public class MyTrustManager implements X509TrustManager {
 
-	private Component parentComponent;
+	private AskView view;
 	private X509TrustManager sunJSSEX509TrustManager;
 
 
 
-	public MyTrustManager(Component parentComponent) throws Exception {
-		this.parentComponent = parentComponent;
+	public MyTrustManager(AskView view) throws Exception {
+		this.view = view;
 
 		TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509", "SunJSSE");
 		
@@ -84,13 +85,9 @@ public class MyTrustManager implements X509TrustManager {
 				 } else {
 					 sb.append("\n Issued By:\n \t"+chain[i].getSubjectDN());
 				 }
-			 }
+			 };
 
-			 int option = JOptionPane.showConfirmDialog(parentComponent,
-				sb.toString(), "Certificate Confirmation",
-				JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-
-			 if(option==JOptionPane.NO_OPTION) {
+			 if(view.confirm("Certificate Confirmation", sb.toString(), JOptionPane.NO_OPTION)) {
 				 throw new CertificateException("Not Trusted Certificate!");
 			 }
 		}

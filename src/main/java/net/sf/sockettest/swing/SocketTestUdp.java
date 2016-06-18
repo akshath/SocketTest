@@ -14,7 +14,7 @@ import net.sf.sockettest.*;
  *
  * @author Akshathkumar Shetty
  */
-public class SocketTestUdp extends JPanel /*JFrame*/ {
+public class SocketTestUdp extends JPanel {
     private final String NEW_LINE = "\r\n";
     private ClassLoader cl = getClass().getClassLoader();
     public ImageIcon logo = new ImageIcon(
@@ -61,11 +61,9 @@ public class SocketTestUdp extends JPanel /*JFrame*/ {
     private DatagramPacket pack;
     private byte buffer[];
     
-    protected final JFrame parent;
+    private JFrame parent;
     
-    public SocketTestUdp(final JFrame parent) {
-        //Container cp = getContentPane();
-        this.parent = parent;
+    public SocketTestUdp() {
         Container cp = this;
         
         northPanel = new JPanel();
@@ -315,7 +313,12 @@ public class SocketTestUdp extends JPanel /*JFrame*/ {
         cp.add(buttonPanel,BorderLayout.SOUTH);
         
     }
-    
+
+    public SocketTestUdp setParent(JFrame parent) {
+        this.parent = parent;
+        return this;
+    }
+
     /////////////////////
     //action & helper methods
     /////////////////////

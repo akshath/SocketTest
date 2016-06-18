@@ -3,6 +3,7 @@ package net.sf.sockettest;
 import java.net.*;
 import java.io.*;
 import net.sf.sockettest.swing.SocketTestServer;
+import net.sf.sockettest.swing.SocketTestServerView;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.xml.bind.DatatypeConverter;
@@ -15,13 +16,13 @@ public class SocketServer extends Thread {
     
     private static SocketServer socketServer = null;
     private Socket socket = null;
+    private final SocketTestServerView view;
+    private final SocketTextServerController controller;
     private ServerSocket server = null;
-    private SocketTestServer parent;
     private BufferedInputStream in;
     private boolean desonnected=false;
     private boolean stop = false;
-    
-    //disconnect client
+
     public synchronized void setDesconnected(boolean cr) {
         if(socket!=null && cr) {
             try	{
@@ -33,7 +34,7 @@ public class SocketServer extends Thread {
         desonnected=cr;
         //parent.setClientSocket(null);
     }
-    //stop server
+
     public synchronized void setStop(boolean cr) {
         stop=cr;
         if(server!=null && cr) {
@@ -45,9 +46,10 @@ public class SocketServer extends Thread {
         }
     }
     
-    private SocketServer(SocketTestServer parent, ServerSocket s) {
+    private SocketServer(SocketTestServerView view, SocketTextServerController controller, ServerSocket s) {
         super("SocketServer");
-        this.parent = parent;
+        this.view = view;
+        this.controller = controller;
         server=s;
         setStop(false);
         setDesconnected(false);
@@ -56,10 +58,10 @@ public class SocketServer extends Thread {
     
     
     
-    public static synchronized SocketServer handle(SocketTestServer parent,
+    public static synchronized SocketServer handle(SocketTestServerView view, SocketTextServerController controller,
             ServerSocket s) {
         if(socketServer==null)
-            socketServer=new SocketServer(parent, s);
+            socketServer=new SocketServer(view, controller, s);
         else {
             if(socketServer.server!=null) {
                 try	{
@@ -70,12 +72,12 @@ public class SocketServer extends Thread {
                     if(socketServer.server!=null)
                         socketServer.server.close();
                 } catch (Exception e)	{
-                    parent.error(e.getMessage());
+                    view.error(e.getMessage());
                 }
             }
             socketServer.server = null;
             socketServer.socket = null;
-            socketServer=new SocketServer(parent,s);
+            socketServer=new SocketServer(view, controller, s);
         }
         return socketServer;
     }
@@ -86,7 +88,7 @@ public class SocketServer extends Thread {
                 socket = server.accept();
             } catch (Exception e) {
                 if(!stop) {
-                    parent.error(e.getMessage(),"Error acception connection");
+                    view.error(e.getMessage(),"Error acception connection");
                     stop=true;
                 }
                 continue;
@@ -99,64 +101,64 @@ public class SocketServer extends Thread {
                     System.err.println("Erro closing client socket : "+e);
                 }
                 socket=null;
-                parent.setClientSocket(socket);
+                controller.setClientSocket(socket);
             }
-        }//end of while
-    }//end of run
+        }
+    }
     
     private void startServer() {
-        parent.setClientSocket(socket);
+        controller.setClientSocket(socket);
         InputStream is = null;
-        parent.append("> New Client: "+socket.getInetAddress().getHostAddress());
+        view.appendMessage("> New Client: "+socket.getInetAddress().getHostAddress());
         try {
             is = socket.getInputStream();
             in = new BufferedInputStream(is);
         } catch(IOException e) {
-            parent.append("> Cound't open input stream on Clinet "+e.getMessage());
+            view.appendMessage("> Cound't open input stream on Clinet "+e.getMessage());
             setDesconnected(true);
             return;
         }
         
-        String rec=null;
+        String rec;
         while(true) {
-            rec=null;
-            try	{
-                rec = readInputStream(in);//in.readLine();
+            try {
+                rec = readInputStream(in);
             } catch (Exception e) {
                 setDesconnected(true);
                 if(!desonnected) {
-                    parent.error(e.getMessage(),"Lost Client conection");
-                    parent.append("> Server lost Client conection.");
+                    view.error(e.getMessage(),"Lost Client conection");
+                    view.appendMessage("> Server lost Client conection.");
                 } else
-                    parent.append("> Server closed Client conection.");
+                    view.appendMessage("> Server closed Client conection.");
                 break;
             }
             
             if (rec != null) {
-                if(parent.isHexOutput()) {
+                if(view.isHexOutput()) {
                     rec = DatatypeConverter.printHexBinary(rec.getBytes());
                 }
-                parent.append(rec);
+                view.appendMessage(rec);
             } else {
                 setDesconnected(true);
-                parent.append("> Client closed conection.");
+                view.appendMessage("> Client closed conection.");
                 break;
             }
-        } //end of while
-    } //end of startServer
+        }
+    }
     
-    private static String readInputStream(BufferedInputStream _in)
+    private static String readInputStream(BufferedInputStream in)
     throws IOException {
         String data = "";
-        int s = _in.read();
-        if(s==-1)
+        int s = in.read();
+        if(s == -1) {
             return null;
+        }
         data += ""+(char)s;
-        int len = _in.available();
+        int len = in.available();
         System.out.println("Len got : "+len);
         if(len > 0) {
             byte[] byteData = new byte[len];
-            _in.read(byteData);
+            in.read(byteData);
             data += new String(byteData);
         }
         return StringEscapeUtils.unescapeJava(data);

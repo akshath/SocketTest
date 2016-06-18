@@ -2,7 +2,9 @@ package net.sf.sockettest;
 
 import java.net.*;
 import java.io.*;
-import net.sf.sockettest.swing.SocketTestClient;
+
+import net.sf.sockettest.controller.SocketTestClientController;
+import net.sf.sockettest.swing.SocketTestClientView;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.xml.bind.DatatypeConverter;
@@ -14,8 +16,9 @@ import javax.xml.bind.DatatypeConverter;
 public class SocketClient extends Thread {
     
     private static SocketClient socketClient=null;
+    private SocketTestClientController controller;
     private Socket socket=null;
-    private SocketTestClient parent;
+    private SocketTestClientView view;
     private BufferedInputStream in;
     private boolean disconnected =false;
     
@@ -23,27 +26,28 @@ public class SocketClient extends Thread {
         disconnected =cr;
     }
     
-    private SocketClient(SocketTestClient parent, Socket s) {
+    private SocketClient(SocketTestClientView view, SocketTestClientController controller, Socket s) {
         super("SocketClient");
-        this.parent = parent;
+        this.view = view;
+        this.controller = controller;
         socket=s;
         setDisconnected(false);
         start();
     }
     
-    public static synchronized SocketClient handle(SocketTestClient parent, Socket s) {
+    public static synchronized SocketClient handle(SocketTestClientView view, SocketTestClientController controller, Socket s) {
         if(socketClient==null)
-            socketClient=new SocketClient(parent, s);
+            socketClient=new SocketClient(view, controller, s);
         else {
             if(socketClient.socket!=null) {
                 try	{
                     socketClient.socket.close();
                 } catch (Exception e)	{
-                    parent.error(e.getMessage());
+                    view.error(e.getMessage());
                 }
             }
             socketClient.socket=null;
-            socketClient=new SocketClient(parent,s);
+            socketClient=new SocketClient(view, controller, s);
         }
         return socketClient;
     }
@@ -59,8 +63,8 @@ public class SocketClient extends Thread {
             } catch(IOException e2) {
                 System.err.println("Socket not closed :"+e2);
             }
-            parent.error("Could not open socket : "+e.getMessage());
-            parent.disconnect();
+            view.error("Could not open socket : "+e.getMessage());
+            controller.disconnect();
             return;
         }
         
@@ -68,28 +72,27 @@ public class SocketClient extends Thread {
             try {
                 String got = readInputStream(in);
                 if(got==null) {
-                    parent.disconnect();
+                    controller.disconnect();
                     break;
                 }
-                if(parent.isHexOutput()) {
+                if(view.isHexOutput()) {
                     got = DatatypeConverter.printHexBinary(got.getBytes());
                 }
-                parent.append(got);
+                view.appendMessage(got);
             } catch(IOException e) {
                 if(!disconnected) {
-                    parent.error(e.getMessage(),"Connection lost");
-                    parent.disconnect();
+                    view.error(e.getMessage(),"Connection lost");
+                    controller.disconnect();
                 }
                 break;
             }
-        }//end of while
+        }
         try	{
             is.close();
             in.close();
-            //socket.close();
         } catch (Exception err) {}
         socket=null;
-    }//end of run
+    }
     
     private static String readInputStream(BufferedInputStream _in) throws IOException {
         String data = "";
@@ -106,5 +109,4 @@ public class SocketClient extends Thread {
         }
         return StringEscapeUtils.unescapeJava(data);
     }
-    
 }

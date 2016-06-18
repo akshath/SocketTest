@@ -3,6 +3,7 @@ package net.sf.sockettest;
 import java.awt.*;
 import javax.swing.*;
 
+import net.sf.sockettest.controller.SocketTestClientController;
 import net.sf.sockettest.swing.About;
 import net.sf.sockettest.swing.SocketTestClient;
 import net.sf.sockettest.swing.SocketTestServer;
@@ -24,14 +25,16 @@ public class SocketTest extends JFrame {
     /** Creates a new instance of SocketTest */
     public SocketTest() {
         Container cp = getContentPane();
-        
+
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        SocketTestClient client = new SocketTestClient(this);
-        SocketTestServer server = new SocketTestServer(this);
-        SocketTestUdp udp = new SocketTestUdp(this);
+        SocketTestClient client = new SocketTestClient().setParent(this);
+        client.setController(new SocketTestClientController());
+        SocketTestServer server = new SocketTestServer().setParent(this);
+        server.setController(new SocketTextServerController());
+        SocketTestUdp udp = new SocketTestUdp().setParent(this);
         About about = new About();
         
-        tabbedPane.addTab("Client", ball, (Component)client, "Test any server");
+        tabbedPane.addTab("Client", ball, client, "Test any server");
         tabbedPane.addTab("Server", ball, server, "Test any client");
         tabbedPane.addTab("Udp", ball, udp, "Test any UDP Client or Server");
         tabbedPane.addTab("About", ball, about, "About SocketTest");
