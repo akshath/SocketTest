@@ -136,7 +136,7 @@ public class SocketServer extends Thread {
                 if(parent.isHexOutput()) {
                     rec = DatatypeConverter.printHexBinary(rec.getBytes());
                 }
-                parent.appendnoNewLine(rec);
+                parent.append(rec);
             } else {
                 setDesconnected(true);
                 parent.append("> Client closed conection.");

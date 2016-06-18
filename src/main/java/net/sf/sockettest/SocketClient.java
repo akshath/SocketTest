@@ -74,7 +74,7 @@ public class SocketClient extends Thread {
                 if(parent.isHexOutput()) {
                     got = DatatypeConverter.printHexBinary(got.getBytes());
                 }
-                parent.appendnoNewLine(got);
+                parent.append(got);
             } catch(IOException e) {
                 if(!disconnected) {
                     parent.error(e.getMessage(),"Connection lost");

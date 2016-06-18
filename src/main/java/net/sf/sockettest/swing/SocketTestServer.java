@@ -446,11 +446,6 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
         messagesField.setCaretPosition(messagesField.getText().length());
     }
     
-    public void appendnoNewLine(String msg) {
-        messagesField.append(msg);
-        messagesField.setCaretPosition(messagesField.getText().length());
-    }
-    
     public void sendMessage(String s) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try	{
@@ -463,7 +458,7 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
             } else {
                 append("S: " + s);
             }
-            out.print(StringEscapeUtils.escapeJava(s)+NEW_LINE);
+            out.print(StringEscapeUtils.escapeJava(s));
             out.flush();
             sendField.setText("");
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
