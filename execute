@@ -1,0 +1,3 @@
+#!/bin/bash
+
+$JAVA_HOME/bin/java -cp target/SocketTest-3.0-SNAPSHOT.jar:target/dependency/* net.sf.sockettest.SocketTest
