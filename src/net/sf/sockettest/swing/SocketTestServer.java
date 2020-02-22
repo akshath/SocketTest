@@ -15,7 +15,7 @@ import net.sf.sockettest.*;
  *
  * @author Akshathkumar Shetty
  */
-public class SocketTestServer extends JPanel /*JFrame*/ {
+public class SocketTestServer extends JPanel implements NetService/*JFrame*/ {
     private final String NEW_LINE = "\r\n";
     private ClassLoader cl = getClass().getClassLoader();
     public ImageIcon logo = new ImageIcon(
@@ -466,5 +466,11 @@ public class SocketTestServer extends JPanel /*JFrame*/ {
         centerPanel.setBorder(cb);
         invalidate();
         repaint();
-    }    
+    }
+
+    public void setUpConfiguration(String ip, String port) {
+        ipField.setText(ip);
+        portField.setText(port);
+    }
+
 }
