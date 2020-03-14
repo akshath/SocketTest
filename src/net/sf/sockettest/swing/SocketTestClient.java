@@ -1,25 +1,34 @@
 package net.sf.sockettest.swing;
 
-import java.awt.*;
-import java.awt.event.*;
+import net.sf.sockettest.MyTrustManager;
+import net.sf.sockettest.NetService;
+import net.sf.sockettest.SocketClient;
+import net.sf.sockettest.Util;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.security.SecureRandom;
-
-import java.net.*;
-import java.io.*;
-
-import javax.net.*;
-import javax.net.ssl.*;
-
-import net.sf.sockettest.*;
 
 /**
  * @author Akshathkumar Shetty
  */
-public class SocketTestClient extends JPanel implements NetService{
+public class SocketTestClient extends JPanel implements NetService {
 
     private final String NEW_LINE = "\r\n";
     private ClassLoader cl = getClass().getClassLoader();
@@ -56,6 +65,10 @@ public class SocketTestClient extends JPanel implements NetService{
 
     private JCheckBox secureButton = new JCheckBox("Secure");
     private boolean isSecure = false;
+
+    private JCheckBox hexButton = new JCheckBox("Hex Data");
+    private boolean isHexData = false;
+
     private GridBagConstraints gbc = new GridBagConstraints();
 
     private Socket socket;
@@ -155,6 +168,14 @@ public class SocketTestClient extends JPanel implements NetService{
                 });
         toPanel.add(secureButton, gbc);
 
+        gbc.weightx = 0.0;
+        gbc.gridy = 1;
+        gbc.gridx = 5;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        hexButton.setToolTipText("Send Hex Data");
+        hexButton.addItemListener(e -> isHexData = !isHexData);
+        toPanel.add(hexButton, gbc);
 
         toPanel.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(), "Connect To"));
         topPanel.setLayout(new BorderLayout(10, 0));
@@ -437,9 +458,22 @@ public class SocketTestClient extends JPanel implements NetService{
                 out = new PrintWriter(new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream())), true);
             }
-            append("S: " + s);
-            out.print(s + NEW_LINE);
-            out.flush();
+            if (isHexData) {
+                byte[] hexData = fromHexString(s);
+                if (hexData == null) {
+                    append("E: Illegal Hex String [" + s + "]");
+                } else {
+                    append("S: " + s);
+                    socket.getOutputStream().write(hexData);
+                    socket.getOutputStream().flush();
+                    out.flush();
+                }
+            } else {
+                append("S: " + s);
+                out.print(s);
+                out.flush();
+            }
+
             sendField.setText("");
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         } catch (Exception e) {
@@ -469,6 +503,39 @@ public class SocketTestClient extends JPanel implements NetService{
     public void setUpConfiguration(String ip, String port) {
         ipField.setText(ip);
         portField.setText(port);
+    }
+
+    private static final int[] DEC = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -1, -1, -1, -1, -1, -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, 11, 12, 13, 14, 15};
+
+    public static byte[] fromHexString(String input) {
+        if (input == null) {
+            return null;
+        } else if ((input.length() & 1) == 1) {
+            return null;
+        } else {
+            char[] inputChars = input.toCharArray();
+            byte[] result = new byte[input.length() >> 1];
+
+            for (int i = 0; i < result.length; ++i) {
+                int upperNibble = getDec(inputChars[2 * i]);
+                int lowerNibble = getDec(inputChars[2 * i + 1]);
+                if (upperNibble < 0 || lowerNibble < 0) {
+                    return null;
+                }
+
+                result[i] = (byte) ((upperNibble << 4) + lowerNibble);
+            }
+
+            return result;
+        }
+    }
+
+    public static int getDec(int index) {
+        try {
+            return DEC[index - 48];
+        } catch (ArrayIndexOutOfBoundsException var2) {
+            return -1;
+        }
     }
 
 }
