@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: net.sf.squirrel-sql.thirdparty-non-maven:metouia:1.0.0-beta">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/sf/squirrel-sql/thirdparty-non-maven/metouia/1.0.0-beta/metouia-1.0.0-beta.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/net/sf/squirrel-sql/thirdparty-non-maven/metouia/1.0.0-beta/metouia-1.0.0-beta-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/sf/squirrel-sql/thirdparty-non-maven/metouia/1.0.0-beta/metouia-1.0.0-beta-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
